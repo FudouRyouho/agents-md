@@ -2,6 +2,11 @@
 
 Base reutilizable de estructura documental y contratos de agente para proyectos.
 
+> [!IMPORTANT]
+> Este archivo describe el proyecto — **no manda**. Las reglas viven en los `AGENTS.md`, y son la
+> única autoridad. Si algo de acá parece una regla y no está en un contrato, es un hueco del
+> contrato, no una regla.
+
 ## Objetivo
 
 Separar dos cosas que suelen terminar mezcladas en el mismo lugar:
@@ -18,12 +23,12 @@ tiene una carpeta y un contrato propio.
 
 ```text
 ├── AGENTS.md          — contrato global: rol, clasificación de tareas, principios
-├── docs/              — SSoT del proyecto: dominio, arquitectura, ADR
+├── docs/              — SSoT del proyecto: dominio y arquitectura, en presente
 ├── docs-archive/      — gitignored, local: diseño muerto, racional de "por qué NO"
 ├── references/        — material externo: código vendoreado, wikis, capturas
 └── .agents/
     ├── AGENTS.md      — punto de entrada del proyecto: routing y política transversal
-    ├── context/       — backlog del hoy para el agente
+    ├── profile/       — quién es el usuario: local, gitignored, con su `.example`
     ├── scripts/       — validación ejecutable del corpus
     └── skills/        — skills del proyecto
 ```
@@ -34,12 +39,16 @@ Cada carpeta lleva su propio `AGENTS.md` con las reglas que la gobiernan. El rou
 ## La cadena
 
 ```text
-context/ → docs/ → proyecto
+regla + trabajo → docs/ → código
 ```
 
-`context/` dice **dónde mirar y cómo comportarse**. `docs/` tiene la **verdad del dominio**. El
-código es la **verdad de lo que realmente pasa**. Nunca se copia contenido hacia arriba en la
-cadena: se enlaza.
+Las **reglas** (`AGENTS.md`) dicen cómo comportarse. El **trabajo** abierto vive en el tracker, no
+en un documento. `docs/` tiene la **verdad del dominio**. El código es la **verdad de lo que
+realmente pasa**. El contenido no se copia hacia arriba en la cadena: se enlaza
+(`.agents/AGENTS.md` §1).
+
+Son tres formas distintas —enunciado, regla, trabajo— y sólo la primera es un cuerpo de
+documentos.
 
 ## Los tres hogares
 
@@ -51,41 +60,58 @@ Toda afirmación tiene un solo lugar donde vive. Se decide antes de escribirla:
 | Historia superada, sin valor de razonamiento | **git** — no se escribe en ningún lado |
 | Racional personal de "por qué NO" (diseño muerto, enfoque descartado) | `docs-archive/` |
 
-`docs-archive/` es local y gitignored. El agente nunca escribe ahí por inferencia: propone, y la
-decisión es del usuario.
+`docs-archive/` es local y gitignored, y el agente no escribe ahí por inferencia: propone, y la
+decisión es del usuario (`docs-archive/AGENTS.md`).
 
 ## Uso
 
 Es una **base para ajustar por proyecto**, no un framework a adoptar entero. Un proyecto liviano
-puede tener `context/` casi vacío y dos ADR; uno grande puede tener `context/` con varias
-subcarpetas y un validador con más checks.
+puede tener un solo `docs/` plano y ningún script; uno grande puede tener varios dominios y un
+validador con más checks.
 
-El `AGENTS.md` raíz es global —aplica igual a cualquier proyecto—, mientras que `.agents/AGENTS.md`
-es el punto de entrada de *este* proyecto en particular. Esa división existe para que lo específico
-nunca contamine lo general.
+## Instalación
 
-> [!NOTE]
-> El mecanismo de distribución (symlink hacia una config global vs. copiar la plantilla a cada
-> proyecto) todavía no está definido. Hoy se copia y se ajusta a mano.
+Hay **dos destinos**, no uno:
+
+> Lo que no nombra un dominio, una ruta ni una herramienta se instala **una vez** en el global.
+> Lo que sí, vive en el proyecto.
+
+| Pieza | Destino |
+| --- | --- |
+| `AGENTS.md` | **global** — se mueve a lo que la herramienta carga sola (`~/.config/opencode/AGENTS.md` y equivalentes) |
+| `.agents/profile/PROFILE.md` | **global**, pegado en ese archivo bajo `§ Agent Role`. Es la fuente canónica y no viaja con ningún repo |
+| skills y agentes genéricos | **global** |
+| `.agents/AGENTS.md` | **proyecto** — es, por definición, las respuestas de *ese* repo |
+| `docs/`, `docs-archive/`, `references/` y sus `AGENTS.md` | **proyecto** — la herramienta los carga al tocar la carpeta; si no están ahí, no existen |
+| `.agents/scripts/` | **proyecto** — corre sobre *ese* corpus |
+| skills y agentes dedicados | **proyecto** |
+
+El global se instala una vez por usuario y no se replica. Lo demás se copia al repo y se ajusta: los
+contratos de carpeta tienen contenido genérico pero destino por proyecto, así que divergen cuando un
+proyecto necesita reglas propias — eso es adaptación, no drift.
+
+Este repositorio es **a la vez la fuente y una instancia**: sus contratos se aplican sobre sí mismo.
+Por eso `AGENTS.md` está en la raíz en lugar de en una carpeta aparte, y por eso se puede usar como
+banco de pruebas de sus propias reglas.
 
 ## Verificación
 
 ```bash
-pnpm --filter @agents/scripts validate:docs
+node .agents/scripts/src/validate-docs.mjs
 ```
 
-Valida el corpus de `docs/`: links relativos que resuelven, ausencia de changelog embebido y de
-hashes de commit. Cada check cita la regla de `docs/AGENTS.md` que ejecuta — no hay política
+Cinco checks sobre el corpus de `docs/`: `absolute-link`, `broken-link` y `broken-anchor` —los links
+internos son relativos y resuelven, incluido el fragmento—, `changelog` —nada de historia
+embebida— y `commit-hash`. Cada check cita la regla de `docs/AGENTS.md` que ejecuta: no hay política
 inventada en el validador.
 
-## Idioma
-
-- **Inglés** — documentación que el agente escribe para sí mismo: los `AGENTS.md`, comentarios de
-  código, mensajes de commit.
-- **Español** — comunicación con el usuario, `docs/`, README y JSDoc.
+Antes de tocar el corpus corre sus **fixtures** (`.agents/scripts/fixtures/`): un archivo por check
+que debe dispararlo, y uno limpio que no debe disparar ninguno. El nombre del archivo es la
+expectativa. Si un check no reacciona a su caso conocido, el validador sale con `2` y no valida
+nada — un check sin ejercitar no llega a reportar verde.
 
 ## Estado
 
 Concepto inicial. Existe el esqueleto completo de carpetas con sus contratos, y un validador con
-cuatro checks. Falta definir el mecanismo de distribución, poblar `skills/`, y decidir si
-`.agents/scripts/` se extrae como paquete independiente.
+cinco checks. Falta poblar `skills/` y decidir si `.agents/scripts/` se extrae como paquete
+independiente.

@@ -22,9 +22,10 @@ Before writing a sentence, test it: does it describe the present, or a past even
 **If a doc claims X and now Y is true, the sentence becomes Y.**
 
 - Forbidden: `X (update: actually Y now)`. That is a changelog folded into a sentence.
-- Rewriting loses nothing. Git holds what the sentence used to say.
 - **Inherited violations are not house style.** If the paragraph you are editing is already written
   as a diary, that is drift to fix in the same pass — not a pattern to copy.
+
+A doc may run ahead of the code on purpose. That is §7, and it has a form.
 
 ## 3. Dates and Hashes
 
@@ -33,28 +34,29 @@ Before writing a sentence, test it: does it describe the present, or a past even
 - **Never a commit hash in a living doc.** A hash is provenance, and provenance lives in git.
   Write the claim in the present, without it.
 
-## 4. Decisions — ADR
-
-**One decision per file. Numbered. Never rewritten after acceptance.**
-
-- Path: `docs/adr/NNN-short-slug.md`.
-- A decision record is the one exception to §1: it is dated and it is immutable.
-- To reverse a decision, write a new ADR that supersedes it. Do not edit the old one.
-- Everything else in `docs/` describes the present. Only `adr/` records the moment.
-
-## 5. Links
+## 4. Links
 
 - Internal links are relative. Never absolute paths.
 - A link that does not resolve is an error, not a typo.
 
-## 6. Before Opening a Debate
+## 5. Before Opening a Debate
 
 - If the topic is already documented here, cite the doc. Do not reopen it.
-- If a closed ADR covers it, cite the ADR. Do not re-argue it.
 - Genuinely new and without precedent → open the debate with numbered options.
 
-## 7. Verify
+## 6. Verify
 
 ```bash
-pnpm --filter @agents/scripts validate:docs
+node .agents/scripts/src/validate-docs.mjs
 ```
+
+
+## 7. Declared Drift
+
+**A doc may say "will be". It may never say "is" about something that is not.**
+
+A statement about the future carries three parts, or it is silent drift with good wording:
+
+- What holds — the architecture being declared.
+- What the code does today.
+- Who reconciles them — the plan, the issue, the open question.
