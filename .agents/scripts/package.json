@@ -3,8 +3,5 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Agent tooling: validation checks over the doc corpus.",
-  "scripts": {
-    "validate:docs": "node src/validate-docs.mjs"
-  }
+  "description": "Agent tooling: validation checks over the doc corpus."
 }
