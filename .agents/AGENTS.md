@@ -22,6 +22,7 @@
 | Living truth about the domain or architecture | `docs/` |
 | Superseded history, no reasoning value | **git** — write it nowhere |
 | Rationale for "why NOT this way" — dead design, rejected approach | `docs-archive/` |
+| Work not done — debt, gap, blocker, what comes next | **the tracker** — §4 names it |
 
 - `docs-archive/` is never written by inference. Propose it. The user decides.
 - If it is already committed, it does not go in a doc. The commit preserves it.

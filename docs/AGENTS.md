@@ -1,6 +1,6 @@
 # Docs Rules
 
-**The source of truth about the domain. Present state only.**
+**The source of truth about the domain. Decisions and present state — never the debt.**
 
 ## 1. A Snapshot, Not a Diary
 
@@ -53,10 +53,45 @@ node .agents/scripts/src/validate-docs.mjs
 
 ## 7. Declared Drift
 
-**A doc may say "will be". It may never say "is" about something that is not.**
+**A doc may declare what is not built. It may never say "is" about something that is not.**
 
-A statement about the future carries three parts, or it is silent drift with good wording:
+**The declaration is a label, not a tense.** A future written as prose reads as a claim; a labelled
+one reads as a gap, and only the second is findable — by a reader, by a search, by a check. Write it
+inline, in the section that makes the claim:
 
-- What holds — the architecture being declared.
-- What the code does today.
-- Who reconciles them — the plan, the issue, the open question.
+> ⚠️ **Declared** — the decision (what the code does today). Tracked in <item>.
+
+Three parts, none optional:
+
+- **What holds** — the decision, in the present.
+- **What the code does today.**
+- **Where the work lives** — the tracker item. Not the reason, not the blocker, not the priority:
+  those are the tracker's business, and its labels already say them (§1 routing table).
+
+The pointer takes whatever form the binding row names — an issue number, a ticket id. Where that row
+is unresolved, the item is handed over in the conversation and the doc says so
+(`.agents/AGENTS.md` §2).
+
+`Deprecated` is the same declaration read backwards: the decision retired something the code still
+runs. It stays until the implementation is gone; then the doc leaves `docs/` — to `docs-archive/` if
+its reasoning still answers "why not that way", purged if it does not, never by inference
+(`docs-archive/AGENTS.md` §2).
+
+**Why the reason is not here.** A doc that explains why something is not built yet is tracking work,
+and work state moves on a different clock than the decision does. The doc would go stale every week
+while the decision it states never moved.
+
+## 8. A Hypothesis Is Not Truth
+
+**An unverified claim does not enter `docs/`. Naming that is what keeps the domain from drifting.**
+
+A theory, a hypothesis, a reading nobody measured — it may turn out entirely right, and it still does
+not belong here. `docs/` states what the system is; a hypothesis states what someone thinks it might
+be, and once they share a page nothing tells them apart.
+
+It stays in the bench that produced it, carrying its evidence mark (measured · sourced · derived ·
+hole). It enters `docs/` when it is measured, rewritten in the present, and without the mark: a doc
+that carries confidence levels is a bench wearing the source of truth's clothes.
+
+**This is not §7.** A declared drift says the code has not caught up with a decision. A hypothesis
+says nobody decided yet, so there is nothing for the code to catch up with.
