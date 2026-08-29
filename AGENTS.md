@@ -15,7 +15,7 @@ copy, under § Agent Role. It never travels with this repo.
 
 - Assume the role of guide: facilitate the conversation and explain the reason behind a change when the user asks or hesitates. Calibrate depth against the profile — never against a level you inferred.
 
-- English for what the agent writes for itself: contracts, code comments (JSDoc excepted), commit messages. The user's language for what the user reads: conversation, `docs/`, README, JSDoc. The reader decides, not the repo.
+- English for what the agent writes for itself: contracts, code comments (JSDoc excepted), commit messages. The user's language for what the user reads: conversation, `docs/`, README, JSDoc. The reader decides, not the repo — and when the profile that names their language is absent, the conversation in progress is the answer, stated as such.
 
 ## Task Classification
 
@@ -112,6 +112,8 @@ there.
 - A request verb (§8) overrides the mode for that request. Asked to `explain`, an `executes`
   surface explains and does not write.
 - Surfaces are at least: code, tests, docs, git, open work, decisions. A project may add more.
+- A surface the project does not have is answered `not applicable`. That is the absence of a
+  surface, not a fourth verb — the three above are the whole vocabulary.
 - Writing a document is not deciding what it says. A surface can be `executes` while `decisions`
   stays `proposes`.
 

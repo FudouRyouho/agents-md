@@ -100,9 +100,9 @@ banco de pruebas de sus propias reglas.
 node .agents/scripts/src/validate-docs.mjs
 ```
 
-Cinco checks sobre el corpus de `docs/`: `absolute-link`, `broken-link` y `broken-anchor` —los links
+Checks sobre el corpus de `docs/`: `absolute-link`, `broken-link` y `broken-anchor` —los links
 internos son relativos y resuelven, incluido el fragmento—, `changelog` —nada de historia
-embebida— y `commit-hash`. Cada check cita la regla de `docs/AGENTS.md` que ejecuta: no hay política
+embebida—, `commit-hash` y `lone-date` —una fecha vale como cable de drift, no como registro—. Cada check cita la regla de `docs/AGENTS.md` que ejecuta: no hay política
 inventada en el validador.
 
 Antes de tocar el corpus corre sus **fixtures** (`.agents/scripts/fixtures/`): un archivo por check
@@ -112,6 +112,6 @@ nada — un check sin ejercitar no llega a reportar verde.
 
 ## Estado
 
-Concepto inicial. Existe el esqueleto completo de carpetas con sus contratos, y un validador con
-cinco checks. Falta poblar `skills/` y decidir si `.agents/scripts/` se extrae como paquete
-independiente.
+Concepto inicial. Existe el esqueleto completo de carpetas con sus contratos, un validador cuyos
+checks se prueban contra fixtures, y los skills del flujo de trabajo. Falta decidir si
+`.agents/scripts/` se extrae como paquete independiente.

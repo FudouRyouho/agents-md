@@ -33,7 +33,9 @@
 **Close the loop in the same session.**
 
 1. Did a source-of-truth decision close or change? → update `docs/`.
-2. Is there work left open? → open an issue. It does not live in a document.
+2. Is there work left open? → open an issue. It does not live in a document. While §4's row for
+   it is unresolved, it is handed over in the conversation, listed and marked — a stated
+   exception, not a home, and not a reason to drop it.
 3. Did a rule earn its place? → update the contract that governs it.
 4. Validate `docs/` → if the project has tooling.
 
@@ -58,6 +60,7 @@ Anything left open is not done and not discarded. Re-propose it when it becomes 
 | Where the user profile lives | `.agents/profile/PROFILE.md` |
 | What command validates the corpus | `node .agents/scripts/src/validate-docs.mjs` |
 | Where open work lives | *unresolved — no tracker yet* |
+| Where a working document lives | *unresolved — no bench yet* |
 
 - A row earns its place because a written rule cannot run without it. Derived, never imagined.
 - An unresolved requirement stops **the work that needs it** — not everything else. Ask. Never infer
@@ -76,5 +79,5 @@ Verbs: global §5. This table only picks one per surface — it never redefines 
 | Docs · contracts | executes |
 | Tests | executes |
 | Git | proposes |
-| Open work | not applicable — no tracker |
+| Open work | proposes |
 | Decisions | proposes |

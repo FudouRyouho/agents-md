@@ -150,6 +150,35 @@ function checkHashes(file, raw) {
   }
 }
 
+/**
+ * docs/AGENTS.md §3 — a date earns its place only as a drift tripwire, a claim to reconcile
+ * against something else dated. A lone timestamp is a log and goes to git.
+ *
+ * WARN, not ERROR: "reconciled against something else dated" is read mechanically as a second
+ * date in the same paragraph. Whether a date actually anchors a claim is not decidable here.
+ * The line-start date-log form stays with `changelog`, so one violation is reported once.
+ */
+function checkLoneDate(file, raw) {
+  const DATE = /\b\d{4}-\d{2}-\d{2}\b/g;
+  const DATE_LOG = /^[ \t]*(?:[-*+][ \t]+)?\d{4}-\d{2}-\d{2}[ \t]*[:—-]/gm;
+  const body = stripCode(raw).replace(DATE_LOG, (m) => ' '.repeat(m.length));
+
+  let paragraph = [];
+  const close = () => {
+    if (paragraph.length === 1) {
+      const [line, date] = paragraph[0];
+      add('WARN', 'lone-date', file, line, `lone timestamp, nothing dated to reconcile it against: ${date}`);
+    }
+    paragraph = [];
+  };
+
+  body.split('\n').forEach((text, i) => {
+    if (!text.trim()) return close();
+    for (const m of text.matchAll(DATE)) paragraph.push([i + 1, m[0]]);
+  });
+  close();
+}
+
 // --- Self-test ---------------------------------------------------------------
 
 const FIXTURES = path.join(__dirname, '..', 'fixtures');
@@ -158,6 +187,7 @@ const runChecks = (file, raw) => {
   checkLinks(file, raw);
   checkChangelog(file, raw);
   checkHashes(file, raw);
+  checkLoneDate(file, raw);
 };
 
 /**
