@@ -15,7 +15,44 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REPO = path.resolve(__dirname, '../../..');
+
+/**
+ * .agents/scripts/AGENTS.md §4 — resolve paths from the repo root, not from this directory.
+ * The script is meant to be installed once and linked onto PATH, so its own location says
+ * nothing about which project is being validated. The root is found by walking up from where
+ * the command was invoked, looking for the project's entry point.
+ *
+ * `--dir` is the override for what the walk cannot reach: a second corpus in a monorepo, or a
+ * checkout whose cwd is somewhere else. It is an escape, not the way in — a flag someone has to
+ * remember is a flag that gets forgotten, and a forgotten one here validates the wrong corpus
+ * and still reports green.
+ */
+const MARKER = 'AGENTS.local.md';
+
+function findRoot(from) {
+  let dir = path.resolve(from);
+  for (;;) {
+    if (fs.existsSync(path.join(dir, MARKER))) return dir;
+    const up = path.dirname(dir);
+    if (up === dir) return null;
+    dir = up;
+  }
+}
+
+const flag = process.argv.indexOf('--dir');
+if (flag !== -1 && !process.argv[flag + 1]) {
+  console.error('--dir needs a path');
+  process.exit(1);
+}
+
+const REPO = flag !== -1 ? path.resolve(process.argv[flag + 1]) : findRoot(process.cwd());
+
+if (!REPO) {
+  console.error(`no ${MARKER} found from ${process.cwd()} upwards.`);
+  console.error('Run it from inside a project that uses this base, or pass --dir <path>.');
+  process.exit(1);
+}
+
 const DOCS = path.join(REPO, 'docs');
 
 const findings = [];

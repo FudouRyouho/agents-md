@@ -34,5 +34,8 @@
 
 ## 4. Scope
 
-- Resolve paths from the repo root, not from this directory.
+- Resolve paths from the repo root, not from this directory. The root is found by walking up from
+  where the command runs, looking for the project's entry point; `--dir` overrides it and nothing
+  else does. A script that infers the project from its own location validates whatever it lives
+  next to — and reports green doing it.
 - One file per script. Two scripts is already a lot.
