@@ -33,9 +33,12 @@ tiene una carpeta y un contrato propio.
     └── skills/        — skills del proyecto
 ```
 
-Los dos contratos de la raíz se distinguen por alcance, no por jerarquía: `AGENTS.global.md` no
-nombra dominio, ruta ni herramienta, y por eso se instala una vez por usuario; `AGENTS.local.md`
-es exactamente lo contrario — sólo contiene lo que este repo responde sobre su entorno.
+Los dos contratos de la raíz se distinguen por alcance, no por jerarquía. `AGENTS.global.md` no
+nombra dominio, ruta ni herramienta: vale en cualquier repo, incluso en uno que no use esta base, y
+por eso se instala una vez por usuario. `AGENTS.local.md` nombra las carpetas de la base, así que
+sólo tiene sentido donde la base está instalada — y por eso se copia. Adentro conviven dos cosas:
+las reglas genéricas sobre esas carpetas (§1–§3) y las respuestas propias del repo (§4 binding,
+§5 modo).
 
 ## La cadena
 
@@ -84,7 +87,7 @@ Hay **dos destinos**, no uno:
 | skills y agentes genéricos | **global** |
 | `AGENTS.local.md` | **copia**, contiene el binding, que es por definición la respuesta de ese repo |
 | `docs/`, `docs-archive/`, `references/` y sus `AGENTS.md` | **proyecto** — la herramienta los carga al tocar la carpeta; si no están ahí, no existen |
-| `.agents/scripts/` | **global**, comando en PATH — pendiente: hoy resuelve la raíz desde su propia ubicación |
+| `.agents/scripts/` | **global**, comando en PATH — `chmod +x` y un enlace. Resuelve la raíz desde dónde se lo invoca, no desde dónde vive |
 | skills y agentes dedicados | **proyecto** |
 
 **Enlazar y copiar no son intercambiables.** Se enlaza lo que debe ser el mismo archivo en todos
@@ -107,6 +110,10 @@ banco de pruebas de sus propias reglas.
 node .agents/scripts/src/validate-docs.mjs
 ```
 
+Corre desde cualquier profundidad del proyecto: busca la raíz ascendiendo hasta `AGENTS.local.md`.
+Si no la encuentra, falla — nunca valida un corpus que no le corresponde. `--dir <ruta>` es el
+escape para lo que esa búsqueda no alcanza: un segundo corpus en un monorepo, un checkout en CI.
+
 Checks sobre el corpus de `docs/`: `absolute-link`, `broken-link` y `broken-anchor` —los links
 internos son relativos y resuelven, incluido el fragmento—, `changelog` —nada de historia
 embebida—, `commit-hash` y `lone-date` —una fecha vale como cable de drift, no como registro—. Cada check cita la regla de `docs/AGENTS.md` que ejecuta: no hay política
@@ -122,11 +129,7 @@ nada — un check sin ejercitar no llega a reportar verde.
 Concepto inicial. Existe el esqueleto completo de carpetas con sus contratos, un validador cuyos
 checks se prueban contra fixtures, y los skills del flujo de trabajo.
 
-Abierto:
-
-- **El mecanismo de carga del perfil** — `AGENTS.global.md` lo importa; falta confirmar que ese
-  import se incluya literal y no de forma perezosa.
-- **`.agents/scripts/` como comando global** — decidido que no es un paquete npm sino un ejecutable
-  en PATH; falta que resuelva la raíz del proyecto desde dónde se lo invoca, no desde dónde vive.
-- **El script que siembra un proyecto** — qué hace ante una carpeta que ya existe, y qué pasa
-  cuando la base cambia y el proyecto ya fue sembrado.
+El trabajo abierto vive en [Issues](https://github.com/FudouRyouho/agents-md/issues), no acá: la
+siembra de un proyecto ([#1](https://github.com/FudouRyouho/agents-md/issues/1)) y qué cuenta como
+corpus cuando `docs/` tiene material gitignored
+([#2](https://github.com/FudouRyouho/agents-md/issues/2)).

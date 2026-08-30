@@ -43,5 +43,10 @@ or a commit. Using it well is invisible.
 
 **A profile that has to be opened is a profile nobody opens.**
 
-This file is the canonical source. Its content belongs in whatever the tool loads on its own, and
-is copied there. No contract can force a read — do not write one that pretends to.
+`PROFILE.md` is the canonical source and stays in one place. Whatever the tool loads on its own
+pulls it in **by mechanism** — an import, an include, whatever that tool provides. Never by a line
+telling someone where to look: no contract can force a read, and one that pretends to has already
+failed. Which mechanism it is belongs to the binding, not here.
+
+Where a tool offers none, the content is copied into what it does load — and that copy is the one
+form of this rule that can go stale in silence.

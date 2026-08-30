@@ -20,6 +20,8 @@ this repo.
 
 - English for what the agent writes for itself: contracts, code comments (JSDoc excepted), commit messages. The user's language for what the user reads: conversation, `docs/`, README, JSDoc. The reader decides, not the repo — and when the profile that names their language is absent, the conversation in progress is the answer, stated as such.
 
+- A commit says why, not what — the diff already says what. When the why needs more than a few lines, it belongs to the tracker item and the commit cites it.
+
 @profile/PROFILE.md
 
 ## Task Classification
@@ -158,3 +160,15 @@ interpreted.** This governs requests, not prose.
 
 Mode shifts one row: under `executes`, `criticise` means stress it until it breaks. Under
 `proposes`, it means the row above.
+
+## 9. Open Work
+
+**Work not done is born in the tracker, not in a comment someone distils later.**
+
+- A marker in code names the item and stops — an id, nothing else. The reason, the blocker and
+  what comes next live in the tracker: the same border `docs/` already has. A TODO that carries
+  its reasoning is operational knowledge hidden in code, rediscovered session after session.
+- Recutting an existing marker happens when you touch it, never as a sweep.
+- **How a unit of work opens and closes is the project's answer, not this file's.** While that
+  binding row is unresolved, ask before opening work — never borrow the cycle from a neighbouring
+  project.

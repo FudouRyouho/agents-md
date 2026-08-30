@@ -58,9 +58,9 @@ Anything left open is not done and not discarded. Re-propose it when it becomes 
 | Requirement | Resolution |
 | --- | --- |
 | The mode table — one verb per surface | §5 below |
-| Where the user profile lives | `profile/PROFILE.md` |
+| Where the user profile lives, and how it is loaded | `profile/PROFILE.md`, imported by `AGENTS.global.md` |
 | What command validates the corpus | `node .agents/scripts/src/validate-docs.mjs` |
-| Where open work lives | *unresolved — no tracker yet* |
+| Where open work lives, and how it opens and closes | GitHub Issues (`FudouRyouho/agents-md`) — issue → branch → PR → merge commit, never squash |
 | Where a working document lives | *unresolved — no bench yet* |
 
 - A row earns its place because a written rule cannot run without it. Derived, never imagined.
