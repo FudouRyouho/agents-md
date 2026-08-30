@@ -1,6 +1,12 @@
 # Scripts Rules
 
-**Executable checks over the corpus. Nothing else lives here.**
+**Tools that execute a rule already written in a contract. Nothing else lives here.**
+
+Two kinds, and there is no third: a **check** verifies that a rule holds, a **tool** materialises
+one. Both name the rule they execute. A script that carries policy no contract states is policy
+nobody agreed to — and it is unarguable, because there is nothing to argue against.
+
+Nothing about the project's own domain belongs here, however scripted it looks.
 
 ## 1. Zero Dependencies
 
@@ -21,7 +27,7 @@
 - A check with no citation is `INFO` at most.
 - Do not promote a check to `ERROR` to make it enforceable. Write the rule first.
 
-## 3. Corpus
+## 3. What a Check Reads
 
 **`docs/` and nothing else — plus the fixtures that prove the checks work.**
 
@@ -34,8 +40,14 @@
 
 ## 4. Scope
 
-- Resolve paths from the repo root, not from this directory. The root is found by walking up from
-  where the command runs, looking for the project's entry point; `--dir` overrides it and nothing
-  else does. A script that infers the project from its own location validates whatever it lives
-  next to — and reports green doing it.
-- One file per script. Two scripts is already a lot.
+**Two roots, and never confused.**
+
+- **The project** is found by walking up from where the command runs, looking for the entry point —
+  never from where the script lives. A script that infers the project from its own location works on
+  whatever it sits next to, and reports green doing it. `--dir` overrides this root and nothing else
+  does.
+- **The base** is the opposite: it *is* where the script lives. A tool that copies from the base
+  reads its own location and is right to. The two resolutions look alike and mean opposite things —
+  do not unify them.
+- One file per script. A third has to earn its place against a written rule, the way the first two
+  did.

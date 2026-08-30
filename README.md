@@ -99,6 +99,16 @@ Que la divergencia sea sana no la deja sin origen: la base sigue existiendo como
 así que una regla reescrita en un proyecto se puede contrastar contra de dónde vino. Eso es
 adaptación, no drift.
 
+La columna de copia la siembra un comando, desde la raíz del proyecto a instalar:
+
+```bash
+node .agents/scripts/src/seed.mjs
+```
+
+Crea lo que falta, deja en paz lo idéntico y reporta lo que difiere. No sobrescribe, no renombra a
+`.backup` y no pregunta: sobre algo que ya existe, la decisión vuelve a la conversación. Correrlo
+dos veces no hace nada la segunda.
+
 Este repositorio es **a la vez la fuente y una instancia**: sus contratos se aplican sobre sí mismo.
 Por eso los dos contratos están en la raíz en lugar de en una carpeta aparte, y por eso se puede
 usar como
