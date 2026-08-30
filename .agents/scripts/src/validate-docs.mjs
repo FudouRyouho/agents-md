@@ -13,6 +13,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -55,9 +56,30 @@ if (!REPO) {
 
 const DOCS = path.join(REPO, 'docs');
 
+/**
+ * .agents/scripts/AGENTS.md §3 — the contract governs all of `docs/`, but only the published
+ * corpus gates. What git ignores is private: read and reported, never a reason to fail.
+ * A project without git has no notion of private, so everything is published.
+ */
+function publishedSet() {
+  try {
+    const out = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '--', 'docs'], {
+      cwd: REPO,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return new Set(out.split('\n').filter(Boolean).map((r) => path.join(REPO, r)));
+  } catch {
+    return null; // no git, or not a repo — nothing is private
+  }
+}
+
+const PUBLISHED = publishedSet();
+const isPublished = (file) => PUBLISHED === null || PUBLISHED.has(file);
+
 const findings = [];
 const add = (sev, check, file, line, msg) =>
-  findings.push({ sev, check, file: path.relative(REPO, file), line, msg });
+  findings.push({ sev, check, file: path.relative(REPO, file), line, msg, published: isPublished(file) });
 
 function walk(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -280,14 +302,21 @@ const order = { ERROR: 0, WARN: 1, INFO: 2 };
 findings.sort((a, b) => order[a.sev] - order[b.sev] || a.file.localeCompare(b.file) || a.line - b.line);
 
 for (const f of findings) {
-  console.log(`${f.sev.padEnd(5)} ${f.check.padEnd(14)} ${f.file}:${f.line}  ${f.msg}`);
+  const mark = f.published ? '' : '  · private';
+  console.log(`${f.sev.padEnd(5)} ${f.check.padEnd(14)} ${f.file}:${f.line}  ${f.msg}${mark}`);
 }
 
-const errors = findings.filter((f) => f.sev === 'ERROR').length;
-const warns = findings.filter((f) => f.sev === 'WARN').length;
+const tally = (pub, sev) => findings.filter((f) => f.published === pub && f.sev === sev).length;
+const errors = tally(true, 'ERROR');
+const priv = findings.filter((f) => !f.published).length;
 
-console.log(
-  `\n${files.length} file(s) checked — ${errors} error(s), ${warns} warning(s)`,
-);
+console.log(`\n${files.length} file(s) checked — ${errors} error(s), ${tally(true, 'WARN')} warning(s)`);
+
+if (priv) {
+  console.log(
+    `${' '.repeat(String(files.length).length)} ${tally(false, 'ERROR')} error(s), ` +
+      `${tally(false, 'WARN')} warning(s) in files git ignores — reported, not gated`,
+  );
+}
 
 process.exit(errors > 0 ? 1 : 0);

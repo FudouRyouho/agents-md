@@ -26,11 +26,17 @@ Nothing about the project's own domain belongs here, however scripted it looks.
 
 - A check with no citation is `INFO` at most.
 - Do not promote a check to `ERROR` to make it enforceable. Write the rule first.
+- Severity says what a finding **is**. Whether it breaks the build is §3: only the published
+  corpus gates.
 
 ## 3. What a Check Reads
 
 **`docs/` and nothing else — plus the fixtures that prove the checks work.**
 
+- The contract governs everything under `docs/`. What git ignores is **private**: read and
+  reported, never gated. A rule that holds only where someone is watching is not a rule — and a
+  commit blocked by a file nobody publishes is noise, not rigour.
+- Where there is no git, everything is published. A project without one has no notion of private.
 - `.agents/scripts/fixtures/` is the one exception, and it is not documentation: it is the evidence
   that each check fires on a known-bad file and stays quiet on a clean one.
 - The filename is the expectation. `expect-<check>.md` raises `<check>` and nothing else; `clean.md`

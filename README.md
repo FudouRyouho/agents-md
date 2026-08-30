@@ -82,12 +82,13 @@ Hay **dos destinos**, no uno:
 
 | Pieza | Destino |
 | --- | --- |
-| `AGENTS.global.md` | **global**, se mueve a lo que la herramienta carga sola (`~/.config/opencode/AGENTS.md` y equivalentes) |
+| `AGENTS.global.md` | **global**, enlace desde lo que la herramienta carga sola (`~/.claude/CLAUDE.md` y equivalentes) |
 | `profile/` | **global**, enlace junto al anterior. AGENTS.global.md lo importa |
 | skills y agentes genéricos | **global** |
 | `AGENTS.local.md` | **copia**, contiene el binding, que es por definición la respuesta de ese repo |
+| `CLAUDE.md` | **proyecto**, symlink relativo a `AGENTS.local.md`. Sin él el contrato del proyecto no se carga |
 | `docs/`, `docs-archive/`, `references/` y sus `AGENTS.md` | **proyecto** — la herramienta los carga al tocar la carpeta; si no están ahí, no existen |
-| `.agents/scripts/` | **global**, comando en PATH — `chmod +x` y un enlace. Resuelve la raíz desde dónde se lo invoca, no desde dónde vive |
+| `.agents/scripts/` | **global**, `agents-validate` y `agents-seed` en PATH. El validador resuelve la raíz desde dónde se lo invoca; el seed copia desde dónde vive |
 | skills y agentes dedicados | **proyecto** |
 
 **Enlazar y copiar no son intercambiables.** Se enlaza lo que debe ser el mismo archivo en todos
@@ -102,7 +103,7 @@ adaptación, no drift.
 La columna de copia la siembra un comando, desde la raíz del proyecto a instalar:
 
 ```bash
-node .agents/scripts/src/seed.mjs
+agents-seed
 ```
 
 Crea lo que falta, deja en paz lo idéntico y reporta lo que difiere. No sobrescribe, no renombra a
@@ -117,7 +118,7 @@ banco de pruebas de sus propias reglas.
 ## Verificación
 
 ```bash
-node .agents/scripts/src/validate-docs.mjs
+agents-validate
 ```
 
 Corre desde cualquier profundidad del proyecto: busca la raíz ascendiendo hasta `AGENTS.local.md`.

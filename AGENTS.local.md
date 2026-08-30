@@ -59,9 +59,9 @@ Anything left open is not done and not discarded. Re-propose it when it becomes 
 | --- | --- |
 | The mode table — one verb per surface | §5 below |
 | Where the user profile lives, and how it is loaded | `profile/PROFILE.md`, imported by `AGENTS.global.md` |
-| What command validates the corpus | `node .agents/scripts/src/validate-docs.mjs` |
+| What command validates the corpus | `agents-validate` |
 | Where open work lives, and how it opens and closes | GitHub Issues (`FudouRyouho/agents-md`) — issue → branch → PR → merge commit, never squash |
-| Where a working document lives | *unresolved — no bench yet* |
+| Where a working document lives | `.working/` — gitignored, discarded when the work closes |
 
 - A row earns its place because a written rule cannot run without it. Derived, never imagined.
 - An unresolved requirement stops **the work that needs it** — not everything else. Ask. Never infer
