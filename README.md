@@ -22,19 +22,20 @@ tiene una carpeta y un contrato propio.
 ## Estructura
 
 ```text
-├── AGENTS.md          — contrato global: rol, clasificación de tareas, principios
+├── AGENTS.global.md   — contrato global: rol, clasificación de tareas, principios
+├── AGENTS.local.md    — punto de entrada del proyecto: routing, binding y modo
 ├── docs/              — SSoT del proyecto: dominio y arquitectura, en presente
 ├── docs-archive/      — gitignored, local: diseño muerto, racional de "por qué NO"
+├── profile/           — quién es el usuario: local, gitignored, con su `.example`
 ├── references/        — material externo: código vendoreado, wikis, capturas
 └── .agents/
-    ├── AGENTS.md      — punto de entrada del proyecto: routing y política transversal
-    ├── profile/       — quién es el usuario: local, gitignored, con su `.example`
     ├── scripts/       — validación ejecutable del corpus
     └── skills/        — skills del proyecto
 ```
 
-Cada carpeta lleva su propio `AGENTS.md` con las reglas que la gobiernan. El routing baja desde
-`.agents/AGENTS.md`.
+Los dos contratos de la raíz se distinguen por alcance, no por jerarquía: `AGENTS.global.md` no
+nombra dominio, ruta ni herramienta, y por eso se instala una vez por usuario; `AGENTS.local.md`
+es exactamente lo contrario — sólo contiene lo que este repo responde sobre su entorno.
 
 ## La cadena
 
@@ -45,7 +46,7 @@ regla + trabajo → docs/ → código
 Las **reglas** (`AGENTS.md`) dicen cómo comportarse. El **trabajo** abierto vive en el tracker, no
 en un documento. `docs/` tiene la **verdad del dominio**. El código es la **verdad de lo que
 realmente pasa**. El contenido no se copia hacia arriba en la cadena: se enlaza
-(`.agents/AGENTS.md` §1).
+(`AGENTS.local.md` §1).
 
 Son tres formas distintas —enunciado, regla, trabajo— y sólo la primera es un cuerpo de
 documentos.
@@ -74,24 +75,30 @@ validador con más checks.
 Hay **dos destinos**, no uno:
 
 > Lo que no nombra un dominio, una ruta ni una herramienta se instala **una vez** en el global.
-> Lo que sí, vive en el proyecto.
+> Lo que sí, se **copia** al proyecto y diverge ahí.
 
 | Pieza | Destino |
 | --- | --- |
-| `AGENTS.md` | **global** — se mueve a lo que la herramienta carga sola (`~/.config/opencode/AGENTS.md` y equivalentes) |
-| `.agents/profile/PROFILE.md` | **global**, pegado en ese archivo bajo `§ Agent Role`. Es la fuente canónica y no viaja con ningún repo |
+| `AGENTS.global.md` | **global**, se mueve a lo que la herramienta carga sola (`~/.config/opencode/AGENTS.md` y equivalentes) |
+| `profile/` | **global**, enlace junto al anterior. AGENTS.global.md lo importa |
 | skills y agentes genéricos | **global** |
-| `.agents/AGENTS.md` | **proyecto** — es, por definición, las respuestas de *ese* repo |
+| `AGENTS.local.md` | **copia**, contiene el binding, que es por definición la respuesta de ese repo |
 | `docs/`, `docs-archive/`, `references/` y sus `AGENTS.md` | **proyecto** — la herramienta los carga al tocar la carpeta; si no están ahí, no existen |
-| `.agents/scripts/` | **proyecto** — corre sobre *ese* corpus |
+| `.agents/scripts/` | **global**, comando en PATH — pendiente: hoy resuelve la raíz desde su propia ubicación |
 | skills y agentes dedicados | **proyecto** |
 
-El global se instala una vez por usuario y no se replica. Lo demás se copia al repo y se ajusta: los
-contratos de carpeta tienen contenido genérico pero destino por proyecto, así que divergen cuando un
-proyecto necesita reglas propias — eso es adaptación, no drift.
+**Enlazar y copiar no son intercambiables.** Se enlaza lo que debe ser el mismo archivo en todos
+lados: un cambio se propaga, y esa es la intención. Se copia lo que debe poder divergir — y
+`AGENTS.local.md` es el caso límite, porque su binding responde por *un* repo y compartirlo lo
+vaciaría de sentido.
+
+Que la divergencia sea sana no la deja sin origen: la base sigue existiendo como fuente explicada,
+así que una regla reescrita en un proyecto se puede contrastar contra de dónde vino. Eso es
+adaptación, no drift.
 
 Este repositorio es **a la vez la fuente y una instancia**: sus contratos se aplican sobre sí mismo.
-Por eso `AGENTS.md` está en la raíz en lugar de en una carpeta aparte, y por eso se puede usar como
+Por eso los dos contratos están en la raíz en lugar de en una carpeta aparte, y por eso se puede
+usar como
 banco de pruebas de sus propias reglas.
 
 ## Verificación
@@ -113,5 +120,13 @@ nada — un check sin ejercitar no llega a reportar verde.
 ## Estado
 
 Concepto inicial. Existe el esqueleto completo de carpetas con sus contratos, un validador cuyos
-checks se prueban contra fixtures, y los skills del flujo de trabajo. Falta decidir si
-`.agents/scripts/` se extrae como paquete independiente.
+checks se prueban contra fixtures, y los skills del flujo de trabajo.
+
+Abierto:
+
+- **El mecanismo de carga del perfil** — `AGENTS.global.md` lo importa; falta confirmar que ese
+  import se incluya literal y no de forma perezosa.
+- **`.agents/scripts/` como comando global** — decidido que no es un paquete npm sino un ejecutable
+  en PATH; falta que resuelva la raíz del proyecto desde dónde se lo invoca, no desde dónde vive.
+- **El script que siembra un proyecto** — qué hace ante una carpeta que ya existe, y qué pasa
+  cuando la base cambia y el proyecto ya fue sembrado.

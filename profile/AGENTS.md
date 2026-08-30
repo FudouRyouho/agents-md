@@ -12,7 +12,7 @@
 
 | Statement | Home |
 | --- | --- |
-| Who executes what in this project | the mode table — `.agents/AGENTS.md` |
+| Who executes what in this project | the mode table — `AGENTS.local.md` |
 | Anything that expires | nowhere |
 | Anything a session inferred and nobody confirmed | nowhere — propose it |
 

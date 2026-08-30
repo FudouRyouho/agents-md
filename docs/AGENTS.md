@@ -70,7 +70,7 @@ Three parts, none optional:
 
 The pointer takes whatever form the binding row names — an issue number, a ticket id. Where that row
 is unresolved, the item is handed over in the conversation and the doc says so
-(`.agents/AGENTS.md` §2).
+(`AGENTS.local.md` §2).
 
 `Deprecated` is the same declaration read backwards: the decision retired something the code still
 runs. It stays until the implementation is gone; then the doc leaves `docs/` — to `docs-archive/` if

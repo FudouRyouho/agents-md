@@ -3,7 +3,7 @@
 Copiar a `PROFILE.md` (gitignored) y completar. Lo que sigue es la forma, no el contenido.
 
 Antes de escribir una línea, pasarla por el test del contrato: **si deja de ser cierta cuando
-cambia el proyecto, no es perfil.** El modo de trabajo va en la tabla de `.agents/AGENTS.md`; lo
+cambia el proyecto, no es perfil.** El modo de trabajo va en la tabla de `AGENTS.local.md`; lo
 que caduca no va a ningún lado.
 
 ## Trayecto

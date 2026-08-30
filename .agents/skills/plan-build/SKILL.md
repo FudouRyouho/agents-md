@@ -9,7 +9,7 @@ description: Run after a plan exists and it is time to build it. Executes the pl
 
 Owns: the last block — execution, contrast, validation — and the record it produces.
 Does not own: writing the plan, designing, or deciding what the plan should have said. `Decisions` is
-`proposes` under every mode (global `AGENTS.md` §5). Every other surface — code, tests, docs, **git** —
+`proposes` under every mode (`AGENTS.global.md` §5). Every other surface — code, tests, docs, **git** —
 is whatever the project's own table says. Read it. Never assume `executes`.
 
 Rules below are cited by what they say, not only by their number: a project that adopted the base may
@@ -29,7 +29,7 @@ proves it done, and what should break. Three outcomes, not two:
 - **Admissible** — every step's verification can fail before the change and pass after.
 - **Weak** — a verification exists but cannot fail, names a direction the change cannot produce, or
   guards something that is not there. Report it before executing and state the verification that
-  would bite; producing it is `proposes` work (global `AGENTS.md` §4 — under `proposes`, state the
+  would bite; producing it is `proposes` work (`AGENTS.global.md` §4 — under `proposes`, state the
   criterion and let the user write it). Executing on a verification you already know is vacuous buys
   a green that proves nothing. The plan goes back to `plan-design` §3 *Plan*: a weak verification is
   rewritten where the plan is written, not patched here.
@@ -39,14 +39,14 @@ proves it done, and what should break. Three outcomes, not two:
 Then read, before the first change:
 
 - The **mode table** for code, tests, docs, git and open work. `not applicable` is the absence of a
-  surface, not a fourth verb (global `AGENTS.md` §5). A project whose git surface is `proposes` gets
+  surface, not a fourth verb (`AGENTS.global.md` §5). A project whose git surface is `proposes` gets
   changes staged and described, never committed or pushed on your initiative.
 - The **design the plan cites** — for its ids and its falsifier. The plan is the instruction; the
   design is what the instruction is answerable to.
 - The **verification command the project names** — its binding table, its Makefile, its scripts, its
   CI, whichever of those it actually has. Never an invented variant: a command that exists only in
   your message proves nothing.
-- The **binding table** (`.agents/AGENTS.md` §4) for where the record lives and where open work goes.
+- The **binding table** (`AGENTS.local.md` §4) for where the record lives and where open work goes.
   §4 governs a missing row and is not restated here; what it produces here is that the gap never stops
   the build, and **when no row names a home for the record, it is delivered in the conversation and
   not written into the repo**, saying so in its header.
@@ -79,9 +79,9 @@ verification and its verdict of the three, and name the record's destination or 
   version of the library, the actual error, the surrounding code. Never trust memory of an API, and
   never state what a config or CI does without having read it in this run.
 - **Never close a step by weakening its test.** A test that passes because the code under test
-  changed is not fixed, it is silenced (global `AGENTS.md` §6).
+  changed is not fixed, it is silenced (`AGENTS.global.md` §6).
 - **Form decisions the plan left open are recorded, not escalated one by one.** Under `executes`,
-  record the assumption and move on; under `proposes`, ask (global `AGENTS.md` §7). Each recorded
+  record the assumption and move on; under `proposes`, ask (`AGENTS.global.md` §7). Each recorded
   assumption is a departure, and stage 2 gives it its verdict — that is where it is answered for,
   which is why the build does not stop for it.
 - **What appears and was not in the plan is routed, not absorbed.** This is the door scope creep
@@ -111,7 +111,7 @@ did not hold — and then one of four verdicts, which are not interchangeable:
 | **unresolved** | It was worked around. | Say so plainly and name what the workaround costs. |
 
 - **`resolved otherwise` never promotes itself.** A rule that earned its place goes to the contract
-  that governs it (`.agents/AGENTS.md` §2) — *proposed*, because deciding it is `decisions`, which is
+  that governs it (`AGENTS.local.md` §2) — *proposed*, because deciding it is `decisions`, which is
   `proposes` under every mode. Applying it in the code and letting the code stand as its statement is
   how a criterion nobody agreed to becomes the house rule. Separating this from **covered** is the
   whole point of having both: one asks for a decision, the other reports a plan that skipped one.
@@ -147,7 +147,7 @@ decided it.
   discard without its reason gets re-proposed within the month.
 - **Nothing stays to live.** Everything that entered the record leaves through one of four doors —
   the code, the docs, the tracker, or an explicit discard. Open work belongs in the tracker, not in a
-  document (`.agents/AGENTS.md` §2). **Where that surface is `not applicable` or its row is
+  document (`AGENTS.local.md` §2). **Where that surface is `not applicable` or its row is
   unresolved, the leftovers are handed to the user in the conversation, listed and marked** — a
   stated exception, not a home, and not a reason to drop them.
 - **The scaffolding gets a stated fate.** Purge the working record when its content has moved on and
@@ -169,8 +169,7 @@ carry their reason; the scaffolding has a fate and a retirement condition.
 Its header states: what it is, what it is not, where it lives — or that no binding row names a home,
 so it is being delivered in the conversation — and the language it is written in.
 
-Written in the user's language, and the profile's absence has its own answer there (global
-`AGENTS.md` § Agent Role).
+Written in the user's language, and the profile's absence has its own answer there (`AGENTS.global.md` § Agent Role).
 
 Its body carries, at minimum: the modes and the verification command this build ran under; per step,
 the predicted failure and the verification that closed it; every departure with its verdict; the

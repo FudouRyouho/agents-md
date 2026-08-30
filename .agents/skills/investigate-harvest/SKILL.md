@@ -10,7 +10,7 @@ description: Run before designing or planning anything, when the facts the desig
 Owns: the three stages that run as one block before any design exists — research, criterion,
 decisions — and the document they produce.
 Does not own: the design, the plan, the implementation, or the choice itself. `Decisions` is
-`proposes` under every mode (global `AGENTS.md` §5). This skill lays out what decides. The user decides.
+`proposes` under every mode (`AGENTS.global.md` §5). This skill lays out what decides. The user decides.
 
 Every rule below is cited by what it says, not only by its number. A project that adopted the base
 may hold the same rule in a different file — read that project's equivalent, and when it has none,
@@ -29,10 +29,10 @@ Then read, before the first search:
 
 - The project entry point's **routing** and **mode** tables. Never redefine a mode; read the one the
   project declared.
-- The **binding table** — what the project answers about its environment (`.agents/AGENTS.md` §4) —
+- The **binding table** — what the project answers about its environment (`AGENTS.local.md` §4) —
   for two things this skill needs: where a working document lives, and where open work goes.
 
-`.agents/AGENTS.md` §4 governs a missing or unresolved row and is not restated here. What it produces
+`AGENTS.local.md` §4 governs a missing or unresolved row and is not restated here. What it produces
 for this skill: research and criterion need neither row, so the gap never cancels the investigation;
 and **when no row names a home for the document, it is delivered in the conversation and not written
 into the repo**, its leftovers staying in it, marked as parked on that answer.
@@ -110,7 +110,7 @@ The closing section carries these in order: the axes, then the open questions, t
 investigate.
 
 - **Per axis: why A, why B, and what decides it.** Never one recommendation dressed as a conclusion
-  (global `AGENTS.md` §8, `propose`).
+  (`AGENTS.global.md` §8, `propose`).
 - **Order the axes by weight and name the one that can invert the conclusion.** If no axis can, say
   that too — it means the question was already settled.
 - **Name when to revisit:** the concrete condition under which the answer changes.
@@ -120,7 +120,7 @@ investigate.
 - **Name what you did not investigate**, each with the hook that lets someone pick it up: where you
   saw it, and what was not verified about it.
 - **Leftovers are not done and not discarded.** Open work belongs in the tracker, not in a document
-  (`.agents/AGENTS.md` §2); the binding row names which one. While that row is unresolved they stay
+  (`AGENTS.local.md` §2); the binding row names which one. While that row is unresolved they stay
   in the document, marked as parked on it — that is a stated exception, not a home.
 - A proposal may ride along, **marked as a proposal** and classified per the global task table. It is
   not executed here. RED waits for explicit authorization.
@@ -143,8 +143,7 @@ So the axes are listed together, each one identifiable on its own, and never mix
 orders after them — the open questions, the uninvestigated, the leftovers. **The marks travel**: a
 fact marked `hole` is still a hole in the design that rests on it, and the legend goes with them.
 
-Written in the user's language, and the profile's absence has its own answer there (global
-`AGENTS.md` § Agent Role).
+Written in the user's language, and the profile's absence has its own answer there (`AGENTS.global.md` § Agent Role).
 
 It is not a summary of what you read, not a design, and it contains no implementation.
 

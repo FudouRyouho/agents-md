@@ -10,7 +10,7 @@
 | `docs-archive/` | `docs-archive/AGENTS.md` |
 | `references/` | `references/AGENTS.md` |
 | `.agents/scripts/` | `.agents/scripts/AGENTS.md` |
-| `.agents/profile/` | `.agents/profile/AGENTS.md` |
+| `profile/` | `profile/AGENTS.md` |
 | Unsure | Ask before acting |
 
 ## 1. Route Before Writing
@@ -58,7 +58,7 @@ Anything left open is not done and not discarded. Re-propose it when it becomes 
 | Requirement | Resolution |
 | --- | --- |
 | The mode table — one verb per surface | §5 below |
-| Where the user profile lives | `.agents/profile/PROFILE.md` |
+| Where the user profile lives | `profile/PROFILE.md` |
 | What command validates the corpus | `node .agents/scripts/src/validate-docs.mjs` |
 | Where open work lives | *unresolved — no tracker yet* |
 | Where a working document lives | *unresolved — no bench yet* |

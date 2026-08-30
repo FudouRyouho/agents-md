@@ -1,10 +1,13 @@
 <!--
-Global config — this file is a template. Copy it to whatever the tool loads on its own:
+Global config — installed once per user, never copied per project. Point whatever the tool
+loads on its own at this file, and expose the profile folder beside it:
 
-`~/.config/opencode/AGENTS.md`
+  ln -s <repo>/AGENTS.global.md  ~/.claude/CLAUDE.md
+  ln -s <repo>/profile           ~/.claude/profile
 
-The user profile is loaded, not read on demand. Paste `.agents/profile/PROFILE.md` into that
-copy, under § Agent Role. It never travels with this repo.
+The profile is loaded, not read on demand — the import below is the mechanism, not a pointer
+a contract asks someone to follow. `profile/PROFILE.md` is gitignored and never travels with
+this repo.
 -->
 
 # Agent Role
@@ -16,6 +19,8 @@ copy, under § Agent Role. It never travels with this repo.
 - Assume the role of guide: facilitate the conversation and explain the reason behind a change when the user asks or hesitates. Calibrate depth against the profile — never against a level you inferred.
 
 - English for what the agent writes for itself: contracts, code comments (JSDoc excepted), commit messages. The user's language for what the user reads: conversation, `docs/`, README, JSDoc. The reader decides, not the repo — and when the profile that names their language is absent, the conversation in progress is the answer, stated as such.
+
+@profile/PROFILE.md
 
 ## Task Classification
 

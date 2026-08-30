@@ -8,8 +8,7 @@ description: Run once the facts are settled and before any code exists. Designs 
 **Turns settled decisions into a design, a plan whose every step can fail, and the review that proves it.**
 
 Owns: design, retrospective, plan, review — one block, in that order.
-Does not own: settling the facts, or building. `Decisions` is `proposes` under every mode (global
-`AGENTS.md` §5): the design and the plan are delivered, never self-approved.
+Does not own: settling the facts, or building. `Decisions` is `proposes` under every mode (`AGENTS.global.md` §5): the design and the plan are delivered, never self-approved.
 
 **Acceptance is external.** The plan must come out `admissible` under `plan-build` §0 *Precondition* — every
 step's verification able to fail before the change and pass after. `weak` is a rejected plan, not a
@@ -39,7 +38,7 @@ Then read, before the first line of design:
 
 - The project entry point's **routing** and **mode** tables. Never redefine a mode; read the one the
   project declared.
-- The **binding table** (`.agents/AGENTS.md` §4) for where the design and the plan live, and where
+- The **binding table** (`AGENTS.local.md` §4) for where the design and the plan live, and where
   open work goes. §4 governs a missing or unresolved row and is not restated here; what it produces
   here is that **design and plan are delivered in the conversation and not written into the repo**,
   saying so in their header.
@@ -163,8 +162,7 @@ Design and plan are separate documents — one states the form and survives, the
 the build — and the retrospective and the review travel with the plan. All carry ids and name where
 they live.
 
-Written in the user's language, and the profile's absence has its own answer there (global
-`AGENTS.md` § Agent Role).
+Written in the user's language, and the profile's absence has its own answer there (`AGENTS.global.md` § Agent Role).
 
 The design reaches `docs/` when it is approved, not before: writing an unapproved design into the
 source of truth is the self-approval §5 forbids. Once there it is present-tense, and the part that
