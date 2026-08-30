@@ -17,6 +17,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BASE = path.resolve(__dirname, '../../..');
@@ -49,10 +50,73 @@ const PIECES = [
 
 const read = (p) => fs.readFileSync(p, 'utf8');
 
-/** A copy is `same` only when the bytes match. Anything else is the project's own. */
-function stateOfCopy(src, dest) {
+const TEMPLATE_HEADER = `<!--
+Copied from the base. §4 and §5 are answers about THIS repo, and they arrived unanswered on
+purpose — borrowing a row from another project is the one thing §4 forbids outright. Answer them
+before anything reads them.
+-->
+
+`;
+
+/**
+ * The base is its own instance, so its §4 and §5 carry ITS answers. Seeding them verbatim would
+ * hand a project a binding that describes somewhere else, and an agent would read it as true.
+ * The template is derived here rather than kept as a second file, so there is one source and
+ * nothing to drift.
+ *
+ * The first row of §4 points at §5 and is structural, not an answer — it stays.
+ */
+function unanswer(text) {
+  const lines = text.split('\n');
+  let section = null;
+  let inTable = false;
+  let blanked = { '4': 0, '5': 0 };
+
+  const out = lines.map((line) => {
+    const head = line.match(/^## (\d)\. /);
+    if (head) {
+      section = head[1];
+      inTable = false;
+      return line;
+    }
+    if (section !== '4' && section !== '5') return line;
+
+    if (/^\|\s*-+\s*\|/.test(line)) {
+      inTable = true;
+      return line;
+    }
+    if (!line.startsWith('|')) {
+      inTable = false;
+      return line;
+    }
+    if (!inTable) return line;
+
+    const cells = line.split('|');
+    if (cells.length < 4) return line;
+    if (cells[1].includes('The mode table')) return line; // structural, points at §5
+
+    blanked[section] += 1;
+    return `|${cells[1]}| *unresolved* |`;
+  });
+
+  if (!blanked['4'] || !blanked['5']) {
+    console.error(
+      `cannot derive the template: found ${blanked['4']} binding row(s) and ${blanked['5']} mode row(s).`,
+    );
+    console.error('AGENTS.local.md in the base does not have the shape this expects. Nothing was written.');
+    process.exit(1);
+  }
+
+  return TEMPLATE_HEADER + out.join('\n');
+}
+
+/**
+ * A copy is `same` only when it matches what this would write — which for AGENTS.local.md is the
+ * derived template, not the base's own answered copy. Anything else is the project's own.
+ */
+function stateOfCopy(rel, src, dest) {
   if (!fs.existsSync(dest)) return 'created';
-  return read(src) === read(dest) ? 'same' : 'differs';
+  return contentFor(rel, src) === read(dest) ? 'same' : 'differs';
 }
 
 /** A link is `same` only when it is a link and points where it should. */
@@ -62,6 +126,9 @@ function stateOfLink(dest, to) {
   if (!st.isSymbolicLink()) return 'differs';
   return fs.readlinkSync(dest) === to ? 'same' : 'differs';
 }
+
+/** What this would write for a piece. The entry point is derived; everything else is verbatim. */
+const contentFor = (rel, src) => (rel === 'AGENTS.local.md' ? unanswer(read(src)) : read(src));
 
 const results = [];
 
@@ -74,12 +141,12 @@ for (const piece of PIECES) {
     continue;
   }
 
-  const state = piece.kind === 'link' ? stateOfLink(dest, piece.to) : stateOfCopy(src, dest);
+  const state = piece.kind === 'link' ? stateOfLink(dest, piece.to) : stateOfCopy(piece.rel, src, dest);
 
   if (state === 'created') {
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     if (piece.kind === 'link') fs.symlinkSync(piece.to, dest);
-    else fs.copyFileSync(src, dest);
+    else fs.writeFileSync(dest, contentFor(piece.rel, src));
   }
 
   let note = '';
@@ -96,12 +163,28 @@ for (const piece of PIECES) {
   results.push({ state, rel: piece.rel, note });
 }
 
+/**
+ * A contract the target's .gitignore swallows is a contract that does not travel. Measured on a
+ * real project: `references/*` swallowed the contract that was just seeded into it.
+ */
+function ignoredHere(rel) {
+  try {
+    execFileSync('git', ['check-ignore', '-q', '--', rel], { cwd: TARGET, stdio: 'ignore' });
+    return true;
+  } catch {
+    return false; // exit 1 means not ignored; no git means nothing is
+  }
+}
+
 // --- Report -----------------------------------------------------------------
 
 console.log(`seeding ${TARGET}`);
 console.log(`   base ${BASE}\n`);
 
+const swallowed = [];
+
 for (const r of results) {
+  if (r.state !== 'missing' && ignoredHere(r.rel)) swallowed.push(r.rel);
   console.log(`  ${r.state.padEnd(8)} ${r.rel}${r.note ? '  ' + r.note : ''}`);
 }
 
@@ -119,6 +202,14 @@ if (differs) {
       'Compare them by hand and decide — a contract that diverged on purpose is adaptation,\n' +
       'and one that came from somewhere else needs a triage neither this script nor a backup\n' +
       'file can do for you.',
+  );
+}
+
+if (swallowed.length) {
+  console.log(
+    `\nThe target's .gitignore swallows: ${swallowed.join(', ')}.\n` +
+      'A contract that git ignores does not travel with the repo. Add an exception, or accept\n' +
+      'that this project keeps its agent rules local.',
   );
 }
 

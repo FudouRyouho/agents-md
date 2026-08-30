@@ -44,7 +44,8 @@ Anything left open is not done and not discarded. Re-propose it when it becomes 
 
 ## 3. Validation Tooling
 
-- Lives in `.agents/scripts/`. Run with `node .agents/scripts/src/validate-docs.mjs` from the repo root.
+- **Which command is §4's answer, not this section's.** A rule that hardcodes a path travels to a
+  project where that path does not exist, and then contradicts the binding that got it right.
 - A command that needs a workspace to resolve is a command that can pass without running. Contract
   the one that runs with nothing installed.
 - A check that is not run does not verify. A check that reports green without looking is worse

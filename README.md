@@ -24,13 +24,15 @@ tiene una carpeta y un contrato propio.
 ```text
 ├── AGENTS.global.md   — contrato global: rol, clasificación de tareas, principios
 ├── AGENTS.local.md    — punto de entrada del proyecto: routing, binding y modo
+├── CLAUDE.md          — symlink a AGENTS.local.md: el nombre que la herramienta abre sola
 ├── docs/              — SSoT del proyecto: dominio y arquitectura, en presente
 ├── docs-archive/      — gitignored, local: diseño muerto, racional de "por qué NO"
 ├── profile/           — quién es el usuario: local, gitignored, con su `.example`
 ├── references/        — material externo: código vendoreado, wikis, capturas
+├── .working/          — gitignored: documento de trabajo, se descarta al cerrarse
 └── .agents/
-    ├── scripts/       — validación ejecutable del corpus
-    └── skills/        — skills del proyecto
+    ├── scripts/       — herramientas: validar el corpus, sembrar un proyecto
+    └── skills/        — skills del flujo de trabajo
 ```
 
 Los dos contratos de la raíz se distinguen por alcance, no por jerarquía. `AGENTS.global.md` no
@@ -110,10 +112,14 @@ Crea lo que falta, deja en paz lo idéntico y reporta lo que difiere. No sobresc
 `.backup` y no pregunta: sobre algo que ya existe, la decisión vuelve a la conversación. Correrlo
 dos veces no hace nada la segunda.
 
+`AGENTS.local.md` es la excepción: llega con su binding y su tabla de modos **sin responder**. Este
+repo es fuente e instancia a la vez, así que sus respuestas son las de *este* repo — sembrarlas
+verbatim le daría a otro proyecto un contrato que describe a un vecino, que es lo único que §4
+prohíbe de plano. La plantilla se deriva al copiar, no se mantiene como segundo archivo.
+
 Este repositorio es **a la vez la fuente y una instancia**: sus contratos se aplican sobre sí mismo.
 Por eso los dos contratos están en la raíz en lugar de en una carpeta aparte, y por eso se puede
-usar como
-banco de pruebas de sus propias reglas.
+usar como banco de pruebas de sus propias reglas.
 
 ## Verificación
 
@@ -130,6 +136,11 @@ internos son relativos y resuelven, incluido el fragmento—, `changelog` —nad
 embebida—, `commit-hash` y `lone-date` —una fecha vale como cable de drift, no como registro—. Cada check cita la regla de `docs/AGENTS.md` que ejecuta: no hay política
 inventada en el validador.
 
+**Sólo lo publicado corta.** El contrato gobierna todo `docs/`, pero lo que git ignora es material
+privado: se lee, se reporta marcado, y no rompe el exit code. Una regla que sólo vale donde alguien
+mira no es una regla, y un commit bloqueado por un archivo que nadie publica es ruido. Donde no hay
+git, todo es publicado.
+
 Antes de tocar el corpus corre sus **fixtures** (`.agents/scripts/fixtures/`): un archivo por check
 que debe dispararlo, y uno limpio que no debe disparar ninguno. El nombre del archivo es la
 expectativa. Si un check no reacciona a su caso conocido, el validador sale con `2` y no valida
@@ -137,10 +148,12 @@ nada — un check sin ejercitar no llega a reportar verde.
 
 ## Estado
 
-Concepto inicial. Existe el esqueleto completo de carpetas con sus contratos, un validador cuyos
-checks se prueban contra fixtures, y los skills del flujo de trabajo.
+Completa y sin decisiones abiertas: el esqueleto de carpetas con sus contratos, los dos contratos
+de la raíz, el binding con todas sus filas resueltas, las dos herramientas y los skills del flujo
+de trabajo.
 
-El trabajo abierto vive en [Issues](https://github.com/FudouRyouho/agents-md/issues), no acá: la
-siembra de un proyecto ([#1](https://github.com/FudouRyouho/agents-md/issues/1)) y qué cuenta como
-corpus cuando `docs/` tiene material gitignored
-([#2](https://github.com/FudouRyouho/agents-md/issues/2)).
+**Probada contra sí misma, no todavía contra un proyecto ajeno.** Este repo es una instancia
+atípica —es la fuente, su `docs/` tiene un archivo y no tiene dominio—, así que la primera
+instalación real es lo que falta, y es donde se va a ver qué no previmos.
+
+El trabajo abierto vive en [Issues](https://github.com/FudouRyouho/agents-md/issues), no acá.
