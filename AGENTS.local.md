@@ -46,6 +46,8 @@ Anything left open is not done and not discarded. Re-propose it when it becomes 
 
 - **Which command is §4's answer, not this section's.** A rule that hardcodes a path travels to a
   project where that path does not exist, and then contradicts the binding that got it right.
+- **The corpus is what the project publishes.** What git ignores is private: read and reported,
+  never gated. A rule that only holds where someone watches is not a rule.
 - A command that needs a workspace to resolve is a command that can pass without running. Contract
   the one that runs with nothing installed.
 - A check that is not run does not verify. A check that reports green without looking is worse

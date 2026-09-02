@@ -256,6 +256,32 @@ if (swallowed.length) {
   );
 }
 
+/**
+ * Detect old entry-point files when --contract-name differs from the canonical name.
+ * A project seeded with AGENTS (default) and later re-run with --contract-name CLAUDE has
+ * AGENTS.local.md (possibly with resolved §4/§5 answers). It should be absorbed into the new
+ * entry point and the old one removed — but never silently. The script reports and the agent/user
+ * performs the migration.
+ */
+const oldEntryCandidates = [`${BASE_NAME}.local.md`, `${BASE_NAME}.md`].filter((n) => n !== `${CONTRACT_NAME}.md`);
+const oldEntries = oldEntryCandidates
+  .map((name) => path.join(TARGET, name))
+  .filter((p) => fs.existsSync(p));
+
+if (oldEntries.length) {
+  console.log(
+    `\nOld entry-point files detected:`,
+  );
+  for (const p of oldEntries) {
+    console.log(`  ${path.relative(TARGET, p)}`);
+  }
+  console.log(
+    '\nThe new entry point has been created. Migrate any resolved §4/§5 answers from the old\n' +
+      `file(s) into ${CONTRACT_NAME}.md, then delete the old file(s). The script never absorbs\n` +
+      'or deletes — that is a conversation decision, not a script decision.\n',
+  );
+}
+
 if (missing) {
   console.error('\nSome pieces are not in the base. This installation is incomplete.');
   process.exit(1);

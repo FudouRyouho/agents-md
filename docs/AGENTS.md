@@ -50,6 +50,9 @@ A doc may run ahead of the code on purpose. That is §7, and it has a form.
 node .agents/scripts/src/validate-docs.mjs
 ```
 
+**The corpus is what the project publishes.** What git ignores is private: read and reported, never
+gated. A rule that only holds where someone watches is not a rule.
+
 
 ## 7. Declared Drift
 
