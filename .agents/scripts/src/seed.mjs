@@ -125,15 +125,32 @@ function unanswer(text) {
 /**
  * Rewrite internal references from BASE_NAME to CONTRACT_NAME.
  * Handles: AGENTS.md, AGENTS.local.md, and references in routing tables.
+ * Preserves fenced code blocks (```...```) but rewrites inline code and running text.
  */
 function rewriteRefs(text) {
   if (CONTRACT_NAME === BASE_NAME) return text;
 
-  // Replace AGENTS.md -> CONTRACT_NAME.md (but not inside code fences or already rewritten)
-  // We do a careful replacement: whole-word-ish for the filename
-  return text
+  // Protect fenced code blocks by replacing them with placeholders
+  const protectedBlocks = [];
+  let protectedIndex = 0;
+
+  let protectedText = text.replace(/```[\s\S]*?```/g, (match) => {
+    const placeholder = `__PROTECTED_FENCE_${protectedIndex++}__`;
+    protectedBlocks.push({ placeholder, content: match });
+    return placeholder;
+  });
+
+  // Do the replacements on the protected text
+  protectedText = protectedText
     .replace(new RegExp(`${BASE_NAME}\\.md`, 'g'), `${CONTRACT_NAME}.md`)
     .replace(new RegExp(`${BASE_NAME}\\.local\\.md`, 'g'), `${CONTRACT_NAME}.md`);
+
+  // Restore protected blocks
+  for (const { placeholder, content } of protectedBlocks) {
+    protectedText = protectedText.replace(placeholder, content);
+  }
+
+  return protectedText;
 }
 
 /**
