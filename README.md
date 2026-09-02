@@ -23,17 +23,27 @@ tiene una carpeta y un contrato propio.
 
 ```text
 ├── AGENTS.global.md   — contrato global: rol, clasificación de tareas, principios
-├── AGENTS.local.md    — punto de entrada del proyecto: routing, binding y modo
-├── CLAUDE.md          — symlink a AGENTS.local.md: el nombre que la herramienta abre sola
+├── AGENTS.local.md    — punto de entrada del proyecto (base): routing, binding y modo
+├── CLAUDE.md          — symlink a AGENTS.local.md (default AGENTS); con --contract-name CLAUDE es archivo real
 ├── docs/              — SSoT del proyecto: dominio y arquitectura, en presente
+│   └── AGENTS.md      — contrato de docs/ (o CLAUDE.md con --contract-name CLAUDE)
 ├── docs-archive/      — gitignored, local: diseño muerto, racional de "por qué NO"
+│   └── AGENTS.md      — contrato de docs-archive/ (o CLAUDE.md)
 ├── profile/           — quién es el usuario: local, gitignored, con su `.example`
 ├── references/        — material externo: código vendoreado, wikis, capturas
+│   └── AGENTS.md      — contrato de references/ (o CLAUDE.md)
 ├── .working/          — gitignored: documento de trabajo, se descarta al cerrarse
+│   └── AGENTS.md      — contrato de .working/ (o CLAUDE.md)
 └── .agents/
     ├── scripts/       — herramientas: validar el corpus, sembrar un proyecto
+    │   └── AGENTS.md  — contrato de scripts/ (o CLAUDE.md)
     └── skills/        — skills del flujo de trabajo
 ```
+
+Los nombres `AGENTS.md` en subcarpetas usan el afijo canónico `AGENTS` en la base.
+Al sembrar con `--contract-name CLAUDE`, **todos** los archivos de contrato pasan a llamarse
+`CLAUDE.md` (incluyendo `docs/CLAUDE.md`, `.working/CLAUDE.md`, `.agents/scripts/CLAUDE.md`,
+`references/CLAUDE.md`, `docs-archive/CLAUDE.md`) y sus referencias internas se reescriben.
 
 Los dos contratos de la raíz se distinguen por alcance, no por jerarquía. `AGENTS.global.md` no
 nombra dominio, ruta ni herramienta: vale en cualquier repo, incluso en uno que no use esta base, y
@@ -106,16 +116,21 @@ La columna de copia la siembra un comando, desde la raíz del proyecto a instala
 
 ```bash
 agents-seed
+# o con nombre de contrato personalizado (CLAUDE, RULES, etc.):
+agents-seed --contract-name CLAUDE
 ```
 
 Crea lo que falta, deja en paz lo idéntico y reporta lo que difiere. No sobrescribe, no renombra a
 `.backup` y no pregunta: sobre algo que ya existe, la decisión vuelve a la conversación. Correrlo
 dos veces no hace nada la segunda.
 
-`AGENTS.local.md` es la excepción: llega con su binding y su tabla de modos **sin responder**. Este
+El punto de entrada llega con su binding y su tabla de modos **sin responder**. Este
 repo es fuente e instancia a la vez, así que sus respuestas son las de *este* repo — sembrarlas
 verbatim le daría a otro proyecto un contrato que describe a un vecino, que es lo único que §4
 prohíbe de plano. La plantilla se deriva al copiar, no se mantiene como segundo archivo.
+
+**Nombrado del contrato:** por defecto se usa `AGENTS` (archivos `AGENTS.md`, `AGENTS.local.md`).
+Con `--contract-name CLAUDE` se renombra todo a `CLAUDE.md` (raíz, `docs/`, `.working/`, `.agents/scripts/`, etc.) y se reescriben las referencias internas. No se crean symlinks.
 
 Este repositorio es **a la vez la fuente y una instancia**: sus contratos se aplican sobre sí mismo.
 Por eso los dos contratos están en la raíz en lugar de en una carpeta aparte, y por eso se puede
@@ -125,9 +140,12 @@ usar como banco de pruebas de sus propias reglas.
 
 ```bash
 agents-validate
+# o con nombre de contrato personalizado:
+agents-validate --contract-name CLAUDE
 ```
 
-Corre desde cualquier profundidad del proyecto: busca la raíz ascendiendo hasta `AGENTS.local.md`.
+Corre desde cualquier profundidad del proyecto: busca la raíz ascendiendo hasta el archivo de
+contrato (`CLAUDE.md` con `--contract-name CLAUDE`, o `AGENTS.local.md`/`AGENTS.md` por defecto).
 Si no la encuentra, falla — nunca valida un corpus que no le corresponde. `--dir <ruta>` es el
 escape para lo que esa búsqueda no alcanza: un segundo corpus en un monorepo, un checkout en CI.
 

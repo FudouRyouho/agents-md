@@ -29,23 +29,35 @@ if (flag !== -1 && !process.argv[flag + 1]) {
 }
 const TARGET = path.resolve(flag !== -1 ? process.argv[flag + 1] : process.cwd());
 
+const nameFlag = process.argv.indexOf('--contract-name');
+const CONTRACT_NAME = nameFlag !== -1 && process.argv[nameFlag + 1]
+  ? process.argv[nameFlag + 1]
+  : 'AGENTS';
+
 if (!fs.existsSync(TARGET)) {
   console.error(`target does not exist: ${TARGET}`);
   process.exit(1);
 }
 
+const BASE_NAME = 'AGENTS';
+
 /**
  * README § Instalación — only the pieces whose destination is the project.
  * `profile/`, `scripts/` and `skills/` are global links and are never seeded.
+ *
+ * Each piece defines its source relative path (in the base, using BASE_NAME)
+ * and its destination kind. The entry point gets the unanswered template;
+ * everything else is copied verbatim with name references rewritten.
  */
 const PIECES = [
-  { kind: 'copy', rel: 'AGENTS.local.md' },
-  { kind: 'link', rel: 'CLAUDE.md', to: 'AGENTS.local.md' },
-  { kind: 'copy', rel: 'docs/AGENTS.md' },
-  { kind: 'copy', rel: 'docs-archive/AGENTS.md' },
+  { kind: 'entry', rel: `${BASE_NAME}.local.md` },
+  { kind: 'copy', rel: `docs/${BASE_NAME}.md` },
+  { kind: 'copy', rel: `docs-archive/${BASE_NAME}.md` },
   { kind: 'copy', rel: 'docs-archive/.gitignore' },
   { kind: 'copy', rel: 'docs-archive/.gitkeep' },
-  { kind: 'copy', rel: 'references/AGENTS.md' },
+  { kind: 'copy', rel: `references/${BASE_NAME}.md` },
+  { kind: 'copy', rel: `.working/${BASE_NAME}.md` },
+  { kind: 'copy', rel: `.agents/scripts/${BASE_NAME}.md` },
 ];
 
 const read = (p) => fs.readFileSync(p, 'utf8');
@@ -103,7 +115,7 @@ function unanswer(text) {
     console.error(
       `cannot derive the template: found ${blanked['4']} binding row(s) and ${blanked['5']} mode row(s).`,
     );
-    console.error('AGENTS.local.md in the base does not have the shape this expects. Nothing was written.');
+    console.error(`${BASE_NAME}.local.md in the base does not have the shape this expects. Nothing was written.`);
     process.exit(1);
   }
 
@@ -111,7 +123,21 @@ function unanswer(text) {
 }
 
 /**
- * A copy is `same` only when it matches what this would write — which for AGENTS.local.md is the
+ * Rewrite internal references from BASE_NAME to CONTRACT_NAME.
+ * Handles: AGENTS.md, AGENTS.local.md, and references in routing tables.
+ */
+function rewriteRefs(text) {
+  if (CONTRACT_NAME === BASE_NAME) return text;
+
+  // Replace AGENTS.md -> CONTRACT_NAME.md (but not inside code fences or already rewritten)
+  // We do a careful replacement: whole-word-ish for the filename
+  return text
+    .replace(new RegExp(`${BASE_NAME}\\.md`, 'g'), `${CONTRACT_NAME}.md`)
+    .replace(new RegExp(`${BASE_NAME}\\.local\\.md`, 'g'), `${CONTRACT_NAME}.md`);
+}
+
+/**
+ * A copy is `same` only when it matches what this would write — which for the entry point is the
  * derived template, not the base's own answered copy. Anything else is the project's own.
  */
 function stateOfCopy(rel, src, dest) {
@@ -119,48 +145,46 @@ function stateOfCopy(rel, src, dest) {
   return contentFor(rel, src) === read(dest) ? 'same' : 'differs';
 }
 
-/** A link is `same` only when it is a link and points where it should. */
-function stateOfLink(dest, to) {
-  if (!fs.existsSync(dest) && !fs.lstatSync(dest, { throwIfNoEntry: false })) return 'created';
-  const st = fs.lstatSync(dest);
-  if (!st.isSymbolicLink()) return 'differs';
-  return fs.readlinkSync(dest) === to ? 'same' : 'differs';
-}
+/** What this would write for a piece. The entry point is derived; everything else is verbatim + rewritten. */
+const contentFor = (rel, src) => {
+  const raw = read(src);
+  if (rel === `${BASE_NAME}.local.md`) {
+    return rewriteRefs(unanswer(raw));
+  }
+  return rewriteRefs(raw);
+};
 
-/** What this would write for a piece. The entry point is derived; everything else is verbatim. */
-const contentFor = (rel, src) => (rel === 'AGENTS.local.md' ? unanswer(read(src)) : read(src));
+/** Destination path for a piece in the target, using CONTRACT_NAME. */
+const destPath = (rel) => {
+  const baseName = path.basename(rel);
+  const dir = path.dirname(rel);
+  const newBase = baseName.replace(`${BASE_NAME}.md`, `${CONTRACT_NAME}.md`)
+    .replace(`${BASE_NAME}.local.md`, `${CONTRACT_NAME}.md`);
+  return path.join(TARGET, dir, newBase);
+};
+
+/** Source path for a piece in the base. */
+const srcPath = (rel) => path.join(BASE, rel);
 
 const results = [];
 
 for (const piece of PIECES) {
-  const src = path.join(BASE, piece.rel);
-  const dest = path.join(TARGET, piece.rel);
+  const src = srcPath(piece.rel);
+  const dest = destPath(piece.rel);
 
   if (piece.kind === 'copy' && !fs.existsSync(src)) {
     results.push({ state: 'missing', rel: piece.rel, note: 'not in the base' });
     continue;
   }
 
-  const state = piece.kind === 'link' ? stateOfLink(dest, piece.to) : stateOfCopy(piece.rel, src, dest);
+  const state = stateOfCopy(piece.rel, src, dest);
 
   if (state === 'created') {
     fs.mkdirSync(path.dirname(dest), { recursive: true });
-    if (piece.kind === 'link') fs.symlinkSync(piece.to, dest);
-    else fs.writeFileSync(dest, contentFor(piece.rel, src));
+    fs.writeFileSync(dest, contentFor(piece.rel, src));
   }
 
-  let note = '';
-  if (piece.kind === 'link') {
-    // On `differs` say what is actually there, not what should have been.
-    const st = state === 'differs' ? fs.lstatSync(dest) : null;
-    note = st
-      ? st.isSymbolicLink()
-        ? `is a link to ${fs.readlinkSync(dest)}`
-        : 'is a regular file'
-      : `-> ${piece.to}`;
-  }
-
-  results.push({ state, rel: piece.rel, note });
+  results.push({ state, rel: piece.rel, kind: piece.kind, dest: path.relative(TARGET, dest), note: '' });
 }
 
 /**
@@ -179,13 +203,15 @@ function ignoredHere(rel) {
 // --- Report -----------------------------------------------------------------
 
 console.log(`seeding ${TARGET}`);
-console.log(`   base ${BASE}\n`);
+console.log(`   base ${BASE}`);
+console.log(`   contract name: ${CONTRACT_NAME}\n`);
 
 const swallowed = [];
 
 for (const r of results) {
-  if (r.state !== 'missing' && ignoredHere(r.rel)) swallowed.push(r.rel);
-  console.log(`  ${r.state.padEnd(8)} ${r.rel}${r.note ? '  ' + r.note : ''}`);
+  const mustTravel = r.state !== 'missing' && r.kind !== 'link';
+  if (mustTravel && ignoredHere(r.dest)) swallowed.push(r.dest);
+  console.log(`  ${r.state.padEnd(8)} ${r.dest}${r.note ? '  ' + r.note : ''}`);
 }
 
 const count = (s) => results.filter((r) => r.state === s).length;

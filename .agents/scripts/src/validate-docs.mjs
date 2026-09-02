@@ -27,13 +27,26 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  * checkout whose cwd is somewhere else. It is an escape, not the way in — a flag someone has to
  * remember is a flag that gets forgotten, and a forgotten one here validates the wrong corpus
  * and still reports green.
+ *
+ * `--contract-name` specifies the contract file name (default: AGENTS). The marker becomes
+ * `{contract-name}.md` (e.g., CLAUDE.md, AGENTS.md). If not provided, falls back to
+ * AGENTS.local.md for backwards compatibility.
  */
-const MARKER = 'AGENTS.local.md';
+const DEFAULT_CONTRACT = 'AGENTS';
+
+const nameFlag = process.argv.indexOf('--contract-name');
+const CONTRACT_NAME = nameFlag !== -1 && process.argv[nameFlag + 1]
+  ? process.argv[nameFlag + 1]
+  : DEFAULT_CONTRACT;
+
+const MARKER = `${CONTRACT_NAME}.md`;
+const FALLBACK_MARKER = 'AGENTS.local.md';
 
 function findRoot(from) {
   let dir = path.resolve(from);
   for (;;) {
     if (fs.existsSync(path.join(dir, MARKER))) return dir;
+    if (fs.existsSync(path.join(dir, FALLBACK_MARKER))) return dir;
     const up = path.dirname(dir);
     if (up === dir) return null;
     dir = up;
@@ -49,8 +62,9 @@ if (flag !== -1 && !process.argv[flag + 1]) {
 const REPO = flag !== -1 ? path.resolve(process.argv[flag + 1]) : findRoot(process.cwd());
 
 if (!REPO) {
-  console.error(`no ${MARKER} found from ${process.cwd()} upwards.`);
+  console.error(`no ${MARKER} or ${FALLBACK_MARKER} found from ${process.cwd()} upwards.`);
   console.error('Run it from inside a project that uses this base, or pass --dir <path>.');
+  console.error(`  (searched for: ${MARKER} or ${FALLBACK_MARKER})`);
   process.exit(1);
 }
 
