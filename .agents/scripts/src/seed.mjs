@@ -251,8 +251,11 @@ if (differs) {
 if (swallowed.length) {
   console.log(
     `\nThe target's .gitignore swallows: ${swallowed.join(', ')}.\n` +
-      'A contract that git ignores does not travel with the repo. Add an exception, or accept\n' +
-      'that this project keeps its agent rules local.',
+      'These contracts are gitignored: they exist locally but are NOT part of the repo history.\n' +
+      'They will not be cloned by others, and `git pull` will not restore them.\n' +
+      'The validator (`agents-validate`) still reads them locally and reports findings,\n' +
+      'but marks them as private — they never gate the exit code.\n' +
+      'Add a .gitignore exception to publish them, or accept they stay local.',
   );
 }
 
